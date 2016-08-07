@@ -1,5 +1,4 @@
 // Enemies our player must avoid
-var totalEnemies = 0;
 var Enemy = function() {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
@@ -10,48 +9,83 @@ var Enemy = function() {
     this.x = 0;
     this.y = randPosition(1, 300);
     this.speed = speed(100, 400);
-    ++totalEnemies;
-    console.log(totalEnemies);
-
     
 };
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
-var randPosition = function (min, max) {
-    var _rand = Math.floor(Math.random() * max) + min;
-    var position = 0;
-    console.log(_rand);
-    if ( _rand < 130 )
-        position = 48;
-    else if ( _rand < 213 )
-        position = 131;
-    else 
-        position = 214;
-
-    return position;
-};
-var speed = function (min, max) {
-    return Math.floor(Math.random() * (max - min + 1));
-};
-Enemy.prototype.update = function(dt) {
+Enemy.prototype.update = function (dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    if (this.x < 405) {
+    if (this.x === -100)
+        this.y = randPosition();
+    if (this.x < 405)
         this.x += this.speed * dt;
-    } else {
+    else {
+        resetSpeed();
         this.x = -100;
     }
-    reset();
-    
+   // console.log("My enemy position " + this.y);
 };
 
+/*
+In our randPosition function we simply use an array to calculate a position
+for the enemy-bug to spawn in after it has reached the end of our level. 
+The use of an array for this is to simply make sure that there is at least one
+enemy in each row and to give it an element of randomness.
+*/
+var equalizer = [0, 0, 0];
+var randPosition = function () {
+    var position = 0;
+    if ((equalizer[0] < equalizer[1]) && (equalizer[0] < equalizer[2])) {
+        position = 48;
+        equalizer[0]++;
+        //console.log("0 - " + equalizer[0]);
+    } else if (equalizer[1] < equalizer[2]) {
+        position = 131;
+        equalizer[1]++;
+        //console.log("1 - " + equalizer[1]);
+    } else {
+        position = 214;
+        equalizer[2]++;
+        //console.log("2 - " + equalizer[2]);
+    }
+    return position;
+};
+
+/*
+Speed function takes in a min and max to calculate a random integer for 
+our speed.
+*/
+var speed = function (min, max) {
+    return Math.floor(Math.random() * max + min);
+};
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+
+/*
+In our resetSpeed function we change the speed of each bug every time it 
+reaches the end of our level. This helps give it a randomness effect to keep
+the player guessing every time.
+*/
+var resetSpeed = function () {
+    var xArray = allEnemies.map(function (a) { return a.x; });
+
+    for (i = 0; i < xArray.length; i++) {
+        if (xArray[i] > 405) {
+            allEnemies[i].speed = speed(100, 400);
+            // console.log("Our new speed " + allEnemies[i].speed + " and our new position " + allEnemies[i].y);
+        }
+    }
+};
+
+Enemy.prototype.collision = function () {
+    console.log(Hero.x);
+}
 
 // Now write your own player class
 // This class requires an update(), render() and
@@ -63,6 +97,12 @@ var Hero = function () {
     this.sprite = 'images/char-boy.png';
 }
 
+/*
+On the handleInput method is where the player movement is mapped to the
+arrow keys keystrokes. If the player tries to move outside of the game 
+map the move function is not performed. If the player reaches the end
+of the level (water blocks) his position gets reset.
+*/
 Hero.prototype.handleInput = function(movement){
     if (movement === 'left' && (this.x - 100) > -100 )
         this.x -= 100;
@@ -72,7 +112,13 @@ Hero.prototype.handleInput = function(movement){
         this.y -= 83;
     else if (movement === 'down' && (this.y + 100) < 400 )
         this.y += 83;
-    console.log(this.x, this.y);
+
+    if (this.y < -34) {
+       // collision();
+        this.x = 200;
+        this.y = 380;
+    }
+    //console.log(this.x, this.y);
 };
 
 Hero.prototype.update = function () {
@@ -89,23 +135,6 @@ Hero.prototype.render = function () {
 // Place all enemy objects in an array called allEnemies
 var allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy(), new Enemy(), new Enemy()];
 
-
-/*
-Here we reset the y position of our enemies once they reach the end.
-*/
-var reset = function () {
-    var xArray = allEnemies.map(function (a) { return a.x; });
-    
-    for (i = 0; i < xArray.length; i++) {
-        if (xArray[i] > 405) {
-            console.log("hello");
-            allEnemies[i].y = randPosition(1, 300);
-            allEnemies[i].speed = speed(100, 400);
-        }
-    }
-    
-        
-};
 // Place the player object in a variable called player
 var player = new Hero();
 
