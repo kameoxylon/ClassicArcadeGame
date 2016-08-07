@@ -1,4 +1,5 @@
 // Enemies our player must avoid
+var totalEnemies = 0;
 var Enemy = function() {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
@@ -6,19 +7,44 @@ var Enemy = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
+    this.x = 0;
+    this.y = randPosition(1, 300);
+    this.speed = speed(100, 400);
+    ++totalEnemies;
+    console.log(totalEnemies);
 
-
+    
 };
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
+var randPosition = function (min, max) {
+    var _rand = Math.floor(Math.random() * max) + min;
+    var position = 0;
+    console.log(_rand);
+    if ( _rand < 130 )
+        position = 48;
+    else if ( _rand < 213 )
+        position = 131;
+    else 
+        position = 214;
+
+    return position;
+};
+var speed = function (min, max) {
+    return Math.floor(Math.random() * (max - min + 1));
+};
 Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    this.x = x;
-    this.y = y;
-    this.speed = 
+    if (this.x < 405) {
+        this.x += this.speed * dt;
+    } else {
+        this.x = -100;
+    }
+    reset();
+    
 };
 
 
@@ -46,6 +72,7 @@ Hero.prototype.handleInput = function(movement){
         this.y -= 83;
     else if (movement === 'down' && (this.y + 100) < 400 )
         this.y += 83;
+    console.log(this.x, this.y);
 };
 
 Hero.prototype.update = function () {
@@ -60,10 +87,27 @@ Hero.prototype.render = function () {
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
-var allEnemies = [new Enemy(), new Enemy(), new Enemy()];
+var allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy(), new Enemy(), new Enemy()];
+
+
+/*
+Here we reset the y position of our enemies once they reach the end.
+*/
+var reset = function () {
+    var xArray = allEnemies.map(function (a) { return a.x; });
+    
+    for (i = 0; i < xArray.length; i++) {
+        if (xArray[i] > 405) {
+            console.log("hello");
+            allEnemies[i].y = randPosition(1, 300);
+            allEnemies[i].speed = speed(100, 400);
+        }
+    }
+    
+        
+};
 // Place the player object in a variable called player
 var player = new Hero();
-
 
 
 // This listens for key presses and sends the keys to your
