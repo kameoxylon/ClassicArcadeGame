@@ -6,6 +6,8 @@ var Enemy = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
+
+
 };
 
 // Update the enemy's position, required method for game
@@ -14,7 +16,11 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+    this.x = x;
+    this.y = y;
+    this.speed = 
 };
+
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
@@ -25,13 +31,30 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method
 var Hero = function () {
+    this.x = 200;
+    this.y = 380;
     
-    this.sprite = 'images/superman.png';
-   /* update();
-    render();
-    handleInput();
-    */
+    this.sprite = 'images/char-boy.png';
 }
+
+Hero.prototype.handleInput = function(movement){
+    if (movement === 'left' && (this.x - 100) > -100 )
+        this.x -= 100;
+    else if (movement === 'right' && (this.x + 100) < 500 )
+        this.x += 100;
+    else if (movement === 'up' && (this.y - 100) > -100)
+        this.y -= 83;
+    else if (movement === 'down' && (this.y + 100) < 400 )
+        this.y += 83;
+};
+
+Hero.prototype.update = function () {
+
+};
+
+Hero.prototype.render = function () {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
 
 
 
