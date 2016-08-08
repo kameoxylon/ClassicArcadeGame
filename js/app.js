@@ -1,4 +1,4 @@
-var Enemy = function() {
+var Enemy = function () {
     this.sprite = 'images/enemy-bug.png';
     this.x = 0;
     this.y = randPosition(1, 300);
@@ -21,7 +21,7 @@ Enemy.prototype.update = function (dt) {
         resetSpeed();
         this.x = -100;
     }
-        
+
     if ((this.x >= player.x - 75) && (this.x <= (player.x + 50)) && this.y === player.y) {
         player.x = 200;
         player.y = 380;
@@ -61,7 +61,7 @@ var speed = function (min, max) {
 /*
 Draw the enemy on the screen, required method for game
 */
-Enemy.prototype.render = function() {
+Enemy.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
@@ -72,7 +72,9 @@ the player guessing every time.
 */
 var i;
 var resetSpeed = function () {
-    var xArray = allEnemies.map(function (a) { return a.x; });
+    var xArray = allEnemies.map(function (a) {
+        return a.x;
+    });
 
     for (i = 0; i < xArray.length; i++) {
         if (xArray[i] > 405) {
@@ -94,14 +96,14 @@ arrow keys keystrokes. If the player tries to move outside of the game
 map the move function is not performed. If the player reaches the end
 of the level (water blocks) his position gets reset.
 */
-Hero.prototype.handleInput = function(movement){
-    if (movement === 'left' && (this.x - 100) > -100 )
+Hero.prototype.handleInput = function (movement) {
+    if (movement === 'left' && (this.x - 100) > -100)
         this.x -= 100;
-    else if (movement === 'right' && (this.x + 100) < 500 )
+    else if (movement === 'right' && (this.x + 100) < 500)
         this.x += 100;
     else if (movement === 'up' && (this.y - 100) > -100)
         this.y -= 83;
-    else if (movement === 'down' && (this.y + 100) < 400 )
+    else if (movement === 'down' && (this.y + 100) < 400)
         this.y += 83;
 
     if (this.y < -34) {
@@ -122,7 +124,7 @@ var allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy(), new Enemy(
 
 var player = new Hero();
 
-document.addEventListener('keyup', function(e) {
+document.addEventListener('keyup', function (e) {
     var allowedKeys = {
         37: 'left',
         38: 'up',
