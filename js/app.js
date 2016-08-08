@@ -1,23 +1,18 @@
-// Enemies our player must avoid
 var Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
     this.x = 0;
     this.y = randPosition(1, 300);
     this.speed = speed(100, 400);
-    
 };
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
+/*
+In the update function we have the enemy-bug movement across the screen. It checks the 
+x and y coordinate and moves them appropriately. If the enemy reaches the end of 
+the screen it resets it back to the beginning. In here we also have a collision check
+with the player. If the player comes in contact with the enemy bug it sends the
+player back to the beginning.
+*/
 Enemy.prototype.update = function (dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
     if (this.x === -100)
         this.y = randPosition();
     if (this.x < 405)
@@ -26,7 +21,11 @@ Enemy.prototype.update = function (dt) {
         resetSpeed();
         this.x = -100;
     }
-   // console.log("My enemy position " + this.y);
+        
+    if ((this.x >= player.x - 75) && (this.x <= (player.x + 50)) && this.y === player.y) {
+        player.x = 200;
+        player.y = 380;
+    }
 };
 
 /*
@@ -41,15 +40,12 @@ var randPosition = function () {
     if ((equalizer[0] < equalizer[1]) && (equalizer[0] < equalizer[2])) {
         position = 48;
         equalizer[0]++;
-        //console.log("0 - " + equalizer[0]);
     } else if (equalizer[1] < equalizer[2]) {
         position = 131;
         equalizer[1]++;
-        //console.log("1 - " + equalizer[1]);
     } else {
         position = 214;
         equalizer[2]++;
-        //console.log("2 - " + equalizer[2]);
     }
     return position;
 };
@@ -62,7 +58,9 @@ var speed = function (min, max) {
     return Math.floor(Math.random() * max + min);
 };
 
-// Draw the enemy on the screen, required method for game
+/*
+Draw the enemy on the screen, required method for game
+*/
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
@@ -72,30 +70,23 @@ In our resetSpeed function we change the speed of each bug every time it
 reaches the end of our level. This helps give it a randomness effect to keep
 the player guessing every time.
 */
+var i;
 var resetSpeed = function () {
     var xArray = allEnemies.map(function (a) { return a.x; });
 
     for (i = 0; i < xArray.length; i++) {
         if (xArray[i] > 405) {
             allEnemies[i].speed = speed(100, 400);
-            // console.log("Our new speed " + allEnemies[i].speed + " and our new position " + allEnemies[i].y);
         }
     }
 };
 
-Enemy.prototype.collision = function () {
-    console.log(Hero.x);
-}
-
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method
 var Hero = function () {
     this.x = 200;
     this.y = 380;
-    
+
     this.sprite = 'images/char-boy.png';
-}
+};
 
 /*
 On the handleInput method is where the player movement is mapped to the
@@ -114,11 +105,9 @@ Hero.prototype.handleInput = function(movement){
         this.y += 83;
 
     if (this.y < -34) {
-       // collision();
         this.x = 200;
         this.y = 380;
     }
-    //console.log(this.x, this.y);
 };
 
 Hero.prototype.update = function () {
@@ -129,18 +118,10 @@ Hero.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-
-
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
 var allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy(), new Enemy(), new Enemy()];
 
-// Place the player object in a variable called player
 var player = new Hero();
 
-
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'left',
