@@ -1,31 +1,8 @@
 var Enemy = function () {
     this.sprite = 'images/enemy-bug.png';
     this.x = 0;
-    this.y = randPosition(1, 300);
-    this.speed = speed(100, 400);
-};
-
-/*
-In the update function we have the enemy-bug movement across the screen. It checks the 
-x and y coordinate and moves them appropriately. If the enemy reaches the end of 
-the screen it resets it back to the beginning. In here we also have a collision check
-with the player. If the player comes in contact with the enemy bug it sends the
-player back to the beginning.
-*/
-Enemy.prototype.update = function (dt) {
-    if (this.x === -100)
-        this.y = randPosition();
-    if (this.x < 405)
-        this.x += this.speed * dt;
-    else {
-        resetSpeed();
-        this.x = -100;
-    }
-
-    if ((this.x >= player.x - 75) && (this.x <= (player.x + 50)) && this.y === player.y) {
-        player.x = 200;
-        player.y = 380;
-    }
+    this.y = this.randPosition;
+    this.speed = Math.floor(Math.random() * 450 + 150);
 };
 
 /*
@@ -35,7 +12,7 @@ The use of an array for this is to simply make sure that there is at least one
 enemy in each row and to give it an element of randomness.
 */
 var equalizer = [0, 0, 0];
-var randPosition = function () {
+Enemy.prototype.randPosition = function () {
     var position = 0;
     if ((equalizer[0] < equalizer[1]) && (equalizer[0] < equalizer[2])) {
         position = 48;
@@ -51,11 +28,27 @@ var randPosition = function () {
 };
 
 /*
-Speed function takes in a min and max to calculate a random integer for 
-our speed.
+In the update function we have the enemy-bug movement across the screen. It checks the 
+x and y coordinate and moves them appropriately. If the enemy reaches the end of 
+the screen it resets it back to the beginning. In here we also have a collision check
+with the player. If the player comes in contact with the enemy bug it sends the
+player back to the beginning.
 */
-var speed = function (min, max) {
-    return Math.floor(Math.random() * max + min);
+Enemy.prototype.update = function (dt) {
+    if (this.x === -100)
+        this.y = this.randPosition();
+    if (this.x < 505)
+        this.x += this.speed * dt;
+    else {
+        this.speed = Math.floor(Math.random() * 450 + 150);
+        this.randPosition();
+        this.x = -100;
+    }
+
+    if ((this.x >= player.x - 75) && (this.x <= (player.x + 50)) && this.y === player.y) {
+        player.x = 200;
+        player.y = 380;
+    }
 };
 
 /*
@@ -63,24 +56,6 @@ Draw the enemy on the screen, required method for game
 */
 Enemy.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
-
-/*
-In our resetSpeed function we change the speed of each bug every time it 
-reaches the end of our level. This helps give it a randomness effect to keep
-the player guessing every time.
-*/
-var i;
-var resetSpeed = function () {
-    var xArray = allEnemies.map(function (a) {
-        return a.x;
-    });
-
-    for (i = 0; i < xArray.length; i++) {
-        if (xArray[i] > 405) {
-            allEnemies[i].speed = speed(100, 400);
-        }
-    }
 };
 
 var Hero = function () {
